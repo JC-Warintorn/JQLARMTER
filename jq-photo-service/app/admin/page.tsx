@@ -17,7 +17,7 @@ interface RequestItem {
   status: 'pending' | 'approved' | 'rejected';
 }
 
-// ข้อมูลจำลองสำหรับกราฟ 7 วันที่ผ่านมา (จำนวนผู้ขอยืมจริง)
+// ข้อมูลจำลองสำหรับกราฟ 7 วันที่ผ่านมา
 const weeklyStats = [
   { day: 'จ.', count: 18 },
   { day: 'อ.', count: 32 },
@@ -28,8 +28,9 @@ const weeklyStats = [
   { day: 'อา.', count: 10 },
 ];
 
-// --- [หน้า Dashboard หลัก] ---
 export default function App() {
+  // เนื่องจากในสภาพแวดล้อมจำลองนี้อาจไม่รองรับ next/navigation 
+  // เราจะใช้ window.location.href สำหรับการนำทางแทน
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
@@ -58,7 +59,13 @@ export default function App() {
     setRejectReason('');
   };
 
-  // หาค่าสูงสุดเพื่อทำ Scale กราฟ (บวกเพิ่มนิดหน่อยเพื่อให้มีพื้นที่ด้านบน)
+  const handleLogout = () => {
+    // ใช้ window.location สำหรับการกลับไปยังหน้าแรกเพื่อให้ปลอดภัยต่อสภาพแวดล้อมที่ไม่มี next/navigation
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
+  };
+
   const maxCount = Math.max(...weeklyStats.map(s => s.count)) + 5;
 
   return (
@@ -69,9 +76,9 @@ export default function App() {
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center overflow-hidden rounded-lg border-2 border-white bg-white shadow-sm">
             <img 
-              src="JQ.png" 
+              src="/JQ.png" 
               alt="JQ Logo" 
-              className="h-10 w-10 object-cover" 
+              className="h-10 w-10 object-contain" 
               onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/40?text=JQ"; }} 
             />
           </div>
@@ -90,7 +97,10 @@ export default function App() {
               <button className="w-full px-4 py-4 text-left hover:bg-orange-50 flex items-center justify-between font-bold border-b border-orange-100 text-sm text-slate-700">
                 จัดการคำขอ <Settings size={18} className="text-orange-500" />
               </button>
-              <button className="w-full px-4 py-4 text-left hover:bg-red-50 text-red-600 flex items-center justify-between font-bold text-sm transition-colors">
+              <button 
+                onClick={handleLogout}
+                className="w-full px-4 py-4 text-left hover:bg-red-50 text-red-600 flex items-center justify-between font-bold text-sm transition-colors"
+              >
                 ออกจากระบบ <LogOut size={18} />
               </button>
             </div>
@@ -122,39 +132,33 @@ export default function App() {
           </div>
         </section>
 
-        {/* กราฟจำนวนผู้ขอยืม - แท่งส้ม พื้นหลังขาว */}
+        {/* กราฟจำนวนผู้ขอยืม */}
         <section className="space-y-0">
           <div className="bg-orange-500 border-x-2 border-t-2 border-orange-500 rounded-t-2xl px-4 py-2 font-black text-[10px] uppercase text-white shadow-sm flex justify-between items-center">
             <span>จำนวนผู้ขอยืม (คน) - 7 วันที่ผ่านมา</span>
             <BarChart3 size={14} />
           </div>
           <div className="bg-white border-x-2 border-b-2 border-slate-200 rounded-b-2xl p-6 relative shadow-sm">
-            {/* เส้น Grid แนวนอน */}
             <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-40 pointer-events-none">
                 {[...Array(5)].map((_, i) => <div key={i} className="border-t border-slate-100 w-full h-0"></div>)}
             </div>
 
-            {/* พื้นที่แสดงแท่งกราฟ */}
             <div className="flex items-end justify-between h-40 relative z-10 gap-3">
               {weeklyStats.map((item, idx) => (
                 <div key={idx} className="flex-1 flex flex-col items-center group/bar cursor-default">
-                  {/* ตัวเลขจำนวนคน (ถาวรด้านบน) */}
                   <span className="text-[11px] font-black text-orange-600 mb-1 group-hover/bar:scale-110 transition-transform">
                     {item.count}
                   </span>
                   
-                  {/* แท่งกราฟ */}
                   <div className="relative w-full flex justify-center">
                     <div 
                       className="w-full max-w-[32px] bg-orange-500 rounded-t-lg transition-all duration-700 ease-out shadow-[0_4px_10px_rgba(249,115,22,0.3)] group-hover/bar:bg-orange-600 group-hover/bar:shadow-[0_4px_15px_rgba(249,115,22,0.5)]"
                       style={{ height: `${(item.count / maxCount) * 140}px` }}
                     >
-                        {/* แสงเงาด้านในแท่งเพื่อให้ดูมีมิติ */}
                         <div className="w-1/2 h-full bg-white/20 rounded-tl-lg"></div>
                     </div>
                   </div>
 
-                  {/* ชื่อวัน */}
                   <span className="text-[10px] font-black text-slate-500 mt-2 uppercase tracking-tighter group-hover/bar:text-orange-600 transition-colors">
                     {item.day}
                   </span>
@@ -191,7 +195,7 @@ export default function App() {
                     <div className="flex gap-2 ml-2">
                       <button 
                         onClick={() => handleApprove(item.id)}
-                        className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-[10px] font-black border border-slate-200 hover:bg-orange-500 hover:text-white hover:border-orange-600 transition-all active:scale-95"
+                        className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-[10px] font-black border border-slate-200 hover:bg-orange-500 hover:text-white transition-all active:scale-95"
                       >
                         อนุมัติ
                       </button>
@@ -207,7 +211,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* กล่องเหตุผล */}
                   {rejectingId === item.id && (
                     <div className="absolute right-0 top-full mt-2 z-20 w-[260px] bg-orange-50 border-2 border-orange-500 rounded-3xl p-5 shadow-2xl animate-in fade-in slide-in-from-top-2 origin-top-right">
                       <div className="absolute -top-2.5 right-8 w-5 h-5 bg-orange-50 border-l-2 border-t-2 border-orange-500 rotate-45"></div>
@@ -259,7 +262,3 @@ export default function App() {
     </div>
   );
 }
-
-
-
-
