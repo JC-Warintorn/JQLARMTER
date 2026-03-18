@@ -8,7 +8,6 @@ import {
   X
 } from 'lucide-react';
 
-// --- [โมเดลข้อมูล] ---
 interface RequestItem {
   id: string;
   studentName: string;
@@ -17,7 +16,6 @@ interface RequestItem {
   status: 'pending' | 'approved' | 'rejected';
 }
 
-// ข้อมูลจำลองสำหรับกราฟ 7 วันที่ผ่านมา
 const weeklyStats = [
   { day: 'จ.', count: 18 },
   { day: 'อ.', count: 32 },
@@ -29,13 +27,10 @@ const weeklyStats = [
 ];
 
 export default function App() {
-  // เนื่องจากในสภาพแวดล้อมจำลองนี้อาจไม่รองรับ next/navigation 
-  // เราจะใช้ window.location.href สำหรับการนำทางแทน
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   
-  // ข้อมูลจำลองรายการคำขอ
   const [requests, setRequests] = useState<RequestItem[]>([
     { id: '1', studentName: 'สมชาย ใจดี', equipment: 'กล้อง Sony A7R', date: '12 ต.ค. 69', status: 'pending' },
     { id: '2', studentName: 'สมหญิง รักดี', equipment: 'เลนส์ 50mm f1.8', date: '12 ต.ค. 69', status: 'pending' },
@@ -60,7 +55,6 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    // ใช้ window.location สำหรับการกลับไปยังหน้าแรกเพื่อให้ปลอดภัยต่อสภาพแวดล้อมที่ไม่มี next/navigation
     if (typeof window !== 'undefined') {
       window.location.href = '/';
     }
@@ -71,7 +65,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-10 overflow-x-hidden">
       
-      {/* Header - สีส้มสว่าง */}
       <header className="bg-orange-500 h-16 px-4 flex items-center justify-between sticky top-0 z-40 shadow-md">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center overflow-hidden rounded-lg border-2 border-white bg-white shadow-sm">
@@ -110,7 +103,6 @@ export default function App() {
 
       <main className="max-w-xl mx-auto p-4 mt-6 space-y-8">
         
-        {/* ส่วนสรุปตัวเลข (Stats) */}
         <section className="space-y-4">
           <h2 className="text-xl font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
             <div className="w-2 h-6 bg-orange-500 rounded-full"></div>
@@ -132,7 +124,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* กราฟจำนวนผู้ขอยืม */}
         <section className="space-y-0">
           <div className="bg-orange-500 border-x-2 border-t-2 border-orange-500 rounded-t-2xl px-4 py-2 font-black text-[10px] uppercase text-white shadow-sm flex justify-between items-center">
             <span>จำนวนผู้ขอยืม (คน) - 7 วันที่ผ่านมา</span>
@@ -168,7 +159,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* ตารางรายการ */}
         <section className="space-y-4">
           <h2 className="text-xl font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
             <div className="w-2 h-6 bg-orange-500 rounded-full"></div>
