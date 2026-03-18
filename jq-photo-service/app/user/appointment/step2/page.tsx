@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
-// 1. Import Component Navbar เข้ามา (เช็ค path ให้ตรงกับโฟลเดอร์ของคุณนะครับ)
+// 1. Import useRouter สำหรับการนำทาง
+import { useRouter } from 'next/navigation';
 import Navbar from "../../../components/Navbar"; 
 
 // รายชื่อเดือนสำหรับแสดงผล
@@ -11,16 +12,12 @@ const MONTH_NAMES = [
 ];
 
 export default function AppointmentForm() {
-  // 2. เพิ่ม State สำหรับจัดการเปิด/ปิดเมนู Navbar
+  // 2. เรียกใช้ useRouter
+  const router = useRouter();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // State สำหรับจัดการเดือน/ปี ที่กำลังเปิดดูบนปฏิทิน
   const [currentViewDate, setCurrentViewDate] = useState(new Date());
-  
-  // State เก็บวันที่ผู้ใช้เลือก 
   const [selectedDateStr, setSelectedDateStr] = useState<string>('');
-
-  // จำลองข้อมูลวันที่ถูกจองแล้ว 
   const [bookedDates] = useState<string[]>([
     '2026-03-10', '2026-03-20', '2026-03-21', '2026-03-23'
   ]);
@@ -65,16 +62,30 @@ export default function AppointmentForm() {
     return 'bg-green-500 text-white cursor-pointer hover:bg-green-600 transition-colors shadow-sm'; 
   };
 
+  // --- 3. ฟังก์ชันสำหรับจัดการการกด "ส่งคำขอ" ---
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // ป้องกันไม่ให้ฟอร์มรีเฟรชหน้าเว็บ
+    
+    // TODO: ใส่โค้ดสำหรับบันทึกข้อมูลลง Database (ถ้ามี) ตรงนี้
+    
+    // เปลี่ยนหน้าไปที่ tracking
+    router.push('/user/tracking');
+  };
+
+  // --- 4. ฟังก์ชันสำหรับจัดการการกด "ยกเลิก" ---
+  const handleCancel = () => {
+    // พากลับไปที่หน้าเลือกอุปกรณ์ (step1)
+    router.push('/user/appointment/step1');
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center pb-10 font-sans text-slate-800">
       
       {/* Mobile Container */}
       <div className="w-full max-w-[390px] bg-white shadow-2xl relative">
         
-        {/* 3. ลบ Header เดิมทิ้ง และเรียกใช้ Navbar Component พร้อมส่ง Props */}
         <Navbar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
 
-        {/* 4. ครอบเนื้อหาทั้งหมดด้วย <main> และใส่เงื่อนไขความจาง (opacity) ตอนเปิดเมนู */}
         <main className={`transition duration-300 ${isMenuOpen ? 'opacity-30' : 'opacity-100'}`}>
           
           {/* --- Calendar Section --- */}
@@ -117,7 +128,8 @@ export default function AppointmentForm() {
             <div className="border-2 border-[#F4511E] rounded-2xl p-5 bg-white shadow-sm">
               <h2 className="text-lg font-extrabold mb-4 text-[#FF5722]">กรอกข้อมูล</h2>
 
-              <form className="flex flex-col gap-4">
+              {/* เพิ่ม onSubmit ให้ฟอร์ม */}
+              <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                 <div>
                   <label className="block text-sm font-bold mb-1">ชื่อ-นามสกุล</label>
                   <input type="text" className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#FF9800] focus:border-[#FF9800]" />
@@ -170,10 +182,19 @@ export default function AppointmentForm() {
                   <button type="button" className="flex-1 bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold text-sm py-3 rounded-xl transition-colors">
                     บันทึกแบบร่าง
                   </button>
-                  <button type="button" className="flex-1 bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold text-sm py-3 rounded-xl transition-colors">
+                  {/* เปลี่ยน onClick ให้เรียกฟังก์ชัน handleCancel */}
+                  <button 
+                    type="button" 
+                    onClick={handleCancel}
+                    className="flex-1 bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold text-sm py-3 rounded-xl transition-colors"
+                  >
                     ยกเลิก
                   </button>
-                  <button type="submit" className="flex-1 bg-[#FF5722] hover:bg-[#F4511E] text-white font-bold text-sm py-3 rounded-xl shadow-lg transition-colors">
+                  {/* ปุ่ม submit จะทำงานร่วมกับ onSubmit ในแท็ก <form> */}
+                  <button 
+                    type="submit" 
+                    className="flex-1 bg-[#FF5722] hover:bg-[#F4511E] text-white font-bold text-sm py-3 rounded-xl shadow-lg transition-colors"
+                  >
                     ส่งคำขอ
                   </button>
                 </div>
