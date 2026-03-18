@@ -37,7 +37,8 @@ export default function LoginScreen() {
     if (isAdmin) {
       router.push('/admin');
     } else {
-      router.push('/user');
+      // เปลี่ยนจาก '/user' เป็นพาธของหน้า step1
+      router.push('/user/appointment/step1'); 
     }
   };
 
