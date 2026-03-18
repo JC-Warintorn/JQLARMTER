@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "@/app/components/Navbar";
+import Navbar from "../../../components/Navbar"; // ตรวจสอบ path ของ Navbar ให้ตรงกับโปรเจกต์คุณนะครับ
 
 // ---- Types ----
 type Status = "ว่าง" | "ถูกจอง" | "รออนุมัติ";
@@ -161,96 +161,103 @@ export default function AppointmentPage1() {
   });
 
   const handleSelect = (eq: Equipment) => {
+    // แก้ไข URL ตรงนี้ให้เปลี่ยนไปที่หน้า step2 แทน page2
     router.push(
-      `/user/appointment/page2?assetId=${eq.assetId}&name=${encodeURIComponent(eq.name)}`
+      `/user/appointment/step2?assetId=${eq.assetId}&name=${encodeURIComponent(eq.name)}`
     );
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex justify-center font-sans">
+      
+      {/* Mobile Container เพื่อจำกัดความกว้างให้ดูเหมือนแอปมือถือ */}
+      <div className="w-full max-w-[390px] bg-white min-h-[90vh] shadow-2xl relative overflow-x-hidden">
 
-      {/* ---- Navbar จาก components/Navbar.tsx ---- */}
-      <Navbar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+        {/* ---- Navbar ---- */}
+        <Navbar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
 
-      {/* ---- Search & Filter ---- */}
-      <div className="px-4 py-3 bg-white shadow-sm sticky top-[72px] z-30">
-        <div className="flex gap-2 items-center">
-          <div className="flex-1 flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2">
-            <svg
-              className="w-4 h-4 text-gray-400 shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search Bar"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder-gray-400"
-            />
+        <main className={`transition duration-300 ${isMenuOpen ? 'opacity-30' : 'opacity-100'}`}>
+          {/* ---- Search & Filter ---- */}
+          <div className="px-4 py-3 bg-white shadow-sm sticky top-0 z-20">
+            <div className="flex gap-2 items-center">
+              <div className="flex-1 flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2">
+                <svg
+                  className="w-4 h-4 text-gray-400 shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="ค้นหาอุปกรณ์ หรือ Asset ID..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder-gray-400"
+                />
+              </div>
+
+              {/* Filter */}
+              <div className="relative">
+                <button
+                  onClick={() => setFilterOpen((v) => !v)}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
+                >
+                  Filter
+                </button>
+                {filterOpen && (
+                  <>
+                    <div className="fixed inset-0 z-30" onClick={() => setFilterOpen(false)} />
+                    <div className="absolute right-0 mt-2 w-36 bg-white rounded-lg shadow-xl z-40 overflow-hidden border border-gray-100">
+                      {(["ทั้งหมด", "ว่าง", "ถูกจอง", "รออนุมัติ"] as const).map((f) => (
+                        <button
+                          key={f}
+                          className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                            activeFilter === f
+                              ? "bg-[#FFE0B2] text-[#F4511E] font-semibold"
+                              : "text-gray-700 hover:bg-gray-50"
+                          }`}
+                          onClick={() => { setActiveFilter(f); setFilterOpen(false); }}
+                        >
+                          {f}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* Filter */}
-          <div className="relative">
-            <button
-              onClick={() => setFilterOpen((v) => !v)}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
-            >
-              Filter
-            </button>
-            {filterOpen && (
-              <>
-                <div className="fixed inset-0 z-30" onClick={() => setFilterOpen(false)} />
-                <div className="absolute right-0 mt-2 w-36 bg-white rounded-lg shadow-xl z-40 overflow-hidden border border-gray-100">
-                  {(["ทั้งหมด", "ว่าง", "ถูกจอง", "รออนุมัติ"] as const).map((f) => (
-                    <button
-                      key={f}
-                      className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                        activeFilter === f
-                          ? "bg-orange-50 text-orange-600 font-semibold"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                      onClick={() => { setActiveFilter(f); setFilterOpen(false); }}
-                    >
-                      {f}
-                    </button>
-                  ))}
-                </div>
-              </>
+          {/* ---- Equipment Grid ---- */}
+          <div className="px-4 py-4 pb-10">
+            {filtered.length === 0 ? (
+              <div className="text-center text-gray-400 py-16">ไม่พบอุปกรณ์ที่ค้นหา</div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {filtered.map((eq) => (
+                  <EquipmentCard
+                    key={eq.id}
+                    equipment={eq}
+                    onCardClick={(e) => setSelectedEquipment(e)}
+                    onSelectClick={handleSelect}
+                  />
+                ))}
+              </div>
             )}
           </div>
-        </div>
-      </div>
+        </main>
 
-      {/* ---- Equipment Grid ---- */}
-      <div className="px-4 py-4">
-        {filtered.length === 0 ? (
-          <div className="text-center text-gray-400 py-16">ไม่พบอุปกรณ์ที่ค้นหา</div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {filtered.map((eq) => (
-              <EquipmentCard
-                key={eq.id}
-                equipment={eq}
-                onCardClick={(e) => setSelectedEquipment(e)}
-                onSelectClick={handleSelect}
-              />
-            ))}
-          </div>
+        {/* ---- Detail Modal ---- */}
+        {selectedEquipment && (
+          <DetailModal
+            equipment={selectedEquipment}
+            onClose={() => setSelectedEquipment(null)}
+            onSelect={(eq) => { setSelectedEquipment(null); handleSelect(eq); }}
+          />
         )}
       </div>
-
-      {/* ---- Detail Modal ---- */}
-      {selectedEquipment && (
-        <DetailModal
-          equipment={selectedEquipment}
-          onClose={() => setSelectedEquipment(null)}
-          onSelect={(eq) => { setSelectedEquipment(null); handleSelect(eq); }}
-        />
-      )}
     </div>
   );
 }

@@ -45,7 +45,7 @@ export default function Navbar({ isMenuOpen, setIsMenuOpen }: NavbarProps) {
           
           {/* 2. เปลี่ยน button เป็น Link และใส่ href นำทาง */}
           <Link 
-            href="/user/appointment" // <-- แก้ไข URL ตรงนี้ให้ตรงกับโฟลเดอร์ appointment ของคุณ
+            href="/user/appointment/step1" // <-- แก้ไข URL ตรงนี้ให้ตรงกับโฟลเดอร์ appointment ของคุณ
             onClick={handleMenuClick} 
             className="px-4 py-3 text-left text-gray-900 hover:bg-[#FEF3E8] border-b border-gray-100 transition duration-150 block w-full"
           >

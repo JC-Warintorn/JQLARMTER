@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 // 1. Import Component Navbar เข้ามา (เช็ค path ให้ตรงกับโฟลเดอร์ของคุณนะครับ)
-import Navbar from '../../components/Navbar'; 
+import Navbar from "../../../components/Navbar"; 
 
 // รายชื่อเดือนสำหรับแสดงผล
 const MONTH_NAMES = [
