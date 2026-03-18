@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { 
   Menu, 
@@ -258,3 +259,7 @@ export default function App() {
     </div>
   );
 }
+
+
+
+
