@@ -8,7 +8,32 @@ export default function LoginScreen() {
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
+  // 1. เพิ่ม State เพื่อเก็บค่าจากช่อง Input
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  
+  // 2. เพิ่ม State สำหรับเก็บข้อความ Error
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // ฟังก์ชันสำหรับสลับหน้าจอ (เคลียร์ข้อมูลเดิมทิ้งด้วยเมื่อสลับหน้า)
+  const handleToggleMode = () => {
+    setIsAdmin(!isAdmin);
+    setUsername('');
+    setPassword('');
+    setErrorMessage('');
+  };
+
   const handleSignIn = () => {
+    // 3. Validation: เช็คว่าช่องใดช่องหนึ่งว่างหรือไม่
+    if (!username.trim() || !password.trim()) {
+      setErrorMessage('กรุณากรอกข้อมูลให้ครบถ้วน'); // แจ้งเตือนถ้าข้อมูลไม่ครบ
+      return; // หยุดการทำงาน ไม่เปลี่ยนหน้า
+    }
+
+    // เคลียร์ Error (ถ้ามี) เมื่อผ่านการเช็ค
+    setErrorMessage('');
+
+    // ทำการเปลี่ยนหน้า
     if (isAdmin) {
       router.push('/admin');
     } else {
@@ -42,7 +67,7 @@ export default function LoginScreen() {
 
         {/* --- STUDENT/ADMIN Toggle Button --- */}
         <button
-          onClick={() => setIsAdmin(!isAdmin)}
+          onClick={handleToggleMode}
           className="w-full bg-[#FF5722] hover:bg-[#F4511E] text-white rounded-full py-2.5 text-sm font-bold transition-colors mb-8 shadow-sm"
         >
           {isAdmin ? 'STUDENT' : 'ADMIN'}
@@ -57,6 +82,8 @@ export default function LoginScreen() {
             </label>
             <input
               type={isAdmin ? 'email' : 'text'}
+              value={username} // ผูกค่ากับ State
+              onChange={(e) => setUsername(e.target.value)} // อัปเดต State เมื่อพิมพ์
               className="w-full bg-white text-slate-900 border border-[#F4511E] rounded-full py-3 px-6 focus:outline-none focus:ring-2 focus:ring-[#FF9800]"
             />
           </div>
@@ -67,9 +94,18 @@ export default function LoginScreen() {
             </label>
             <input
               type="password"
+              value={password} // ผูกค่ากับ State
+              onChange={(e) => setPassword(e.target.value)} // อัปเดต State เมื่อพิมพ์
               className="w-full bg-white text-slate-900 border border-[#F4511E] rounded-full py-3 px-6 focus:outline-none focus:ring-2 focus:ring-[#FF9800]"
             />
           </div>
+
+          {/* 4. แสดงข้อความ Error (ถ้ามี) */}
+          {errorMessage && (
+            <div className="text-red-500 text-xs font-bold text-center -mb-2">
+              {errorMessage}
+            </div>
+          )}
 
           {/* --- Submit Button --- */}
           <button
